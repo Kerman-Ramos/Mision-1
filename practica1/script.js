@@ -30,6 +30,7 @@ document.addEventListener("keydown", (event) => {
 	}
 });
 
+actualizarValoresDimensiones();
 iniciarJuego();
 
 function iniciarJuego() {
