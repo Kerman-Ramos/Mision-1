@@ -13,10 +13,16 @@ const btnReiniciar = document.querySelector("#reiniciar");
 const selectDificultad = document.querySelector("#dificultad");
 const textoMovimientos = document.querySelector("#movimientos");
 const contenedorLuces = document.querySelector("#contenedor_luces");
+const sliderFilas = document.querySelector("#filas");
+const sliderColumnas = document.querySelector("#columnas");
+const valorFilas = document.querySelector("#valor-filas");
+const valorColumnas = document.querySelector("#valor-columnas");
 
 btnIniciar.addEventListener("click", iniciarJuego);
 btnReiniciar.addEventListener("click", reiniciarJuego);
 selectDificultad.addEventListener("change", iniciarJuego);
+sliderFilas.addEventListener("input", actualizarValoresDimensiones);
+sliderColumnas.addEventListener("input", actualizarValoresDimensiones);
 
 document.addEventListener("keydown", (event) => {
   if (event.key.toLowerCase() === "t") {
@@ -27,29 +33,41 @@ document.addEventListener("keydown", (event) => {
 iniciar();
 
 function iniciar() {
-  while (
-    filas < FILAS_MIN || filas > FILAS_MAX || 
-    columnas < COLUMNAS_MIN || columnas > COLUMNAS_MAX || 
-    isNaN(filas) || isNaN(columnas)
-  ) {
-    filas = parseInt(prompt(`Ingrese la cantidad de filas (entre ${FILAS_MIN} y ${FILAS_MAX})`), 10);
-    columnas = parseInt(prompt(`Ingrese la cantidad de columnas (entre ${COLUMNAS_MIN} y ${COLUMNAS_MAX})`), 10);
-  }
-
   iniciarJuego();
 }
 
 function reiniciarJuego() {
-  document.location.reload();
+  leerDimensiones();
+  btnIniciar.disabled = true;
+  crearTabla();
+  resetearMovimientos();
+
+  do {
+    hacerMovimientosAleatorios();
+  } while (estanApagadasTodasLasLuces());
 }
 
 function iniciarJuego() {
+  leerDimensiones();
   btnIniciar.disabled = true;
   crearTabla();
   resetearMovimientos();
   do {
     hacerMovimientosAleatorios();
   } while (estanApagadasTodasLasLuces());
+}
+
+function leerDimensiones() {
+  filas = parseInt(sliderFilas.value, 10);
+  columnas = parseInt(sliderColumnas.value, 10);
+}
+
+function actualizarValoresDimensiones() {
+  valorFilas.value = sliderFilas.value;
+  valorColumnas.value = sliderColumnas.value;
+  valorFilas.textContent = sliderFilas.value;
+  valorColumnas.textContent = sliderColumnas.value;
+  iniciarJuego();
 }
 
 function crearTabla() {

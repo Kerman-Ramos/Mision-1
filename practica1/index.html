@@ -15,10 +15,17 @@
 		<aside id="instrucciones">
 			<h2>Instrucciones</h2>
 			<p>El objetivo del juego es apagar todas las luces del tablero. Cada vez que hagas clic en una luz, esta y las luces adyacentes cambiarán de estado (encendido/apagado). ¡Buena suerte!</p>
+
+			<div id="dimensiones">
+				<label for="filas">Filas <output id="valor-filas">3</output></label>
+				<input id="filas" type="range" min="2" max="5" value="3">
+
+				<label for="columnas">Columnas <output id="valor-columnas">3</output></label>
+				<input id="columnas" type="range" min="2" max="8" value="3">
+			</div>
 			
 			<div id="botones">
 					<button id="iniciar" class="boton">Iniciar</button>
-				</select>
 				<select id="dificultad" class="boton">
 					<option value="facil">Fácil</option>
 					<option value="medio" selected>Medio</option>

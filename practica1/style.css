@@ -56,6 +56,69 @@ aside{
 	width: 28%;
 }
 
+#dimensiones{
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+	margin-top: 2rem;
+}
+
+#dimensiones label{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-weight: bold;
+}
+
+#dimensiones output{
+	min-width: 2rem;
+	padding: 0.15rem 0.45rem;
+	border-radius: 4px;
+	background-color: var(--bg-boton);
+	color: var(--text-main);
+	text-align: center;
+}
+
+#dimensiones input[type="range"]{
+	width: 100%;
+	margin-bottom: 0.8rem;
+	accent-color: var(--luz-on);
+	cursor: pointer;
+}
+
+/* Chrome, Edge, Safari y otros navegadores basados en Chromium/WebKit */
+#dimensiones input[type="range"]::-webkit-slider-runnable-track{
+	height: 0.45rem;
+	border-radius: 999px;
+	background-color: var(--bg-boton);
+}
+
+#dimensiones input[type="range"]::-webkit-slider-thumb{
+	width: 1.1rem;
+	height: 1.1rem;
+	margin-top: -0.3rem;
+	border: 2px solid var(--luz-on);
+	border-radius: 50%;
+	background-color: var(--bg-surface);
+	appearance: none;
+}
+
+
+/* Firefox */
+#dimensiones input[type="range"]::-moz-range-track{
+	height: 0.45rem;
+	border-radius: 999px;
+	background-color: var(--bg-boton);
+}
+
+#dimensiones input[type="range"]::-moz-range-thumb{
+	width: 0.85rem;
+	height: 0.85rem;
+	border: 2px solid var(--luz-on);
+	border-radius: 50%;
+	background-color: var(--bg-surface);
+}
+
 main{
 	width: 70%;
 	display: flex;
@@ -96,6 +159,7 @@ main{
 
 #botones{
 	display: flex;
+	justify-content: center;
 	align-items: center;
 	margin-top: 10vh;
 	gap: 2vw;
