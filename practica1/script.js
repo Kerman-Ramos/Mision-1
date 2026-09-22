@@ -8,7 +8,6 @@ let filas = 0, columnas = 0;
 const luces = [];
 const lucesBotones = [];
 
-const btnIniciar = document.querySelector("#iniciar");
 const btnReiniciar = document.querySelector("#reiniciar");
 const selectDificultad = document.querySelector("#dificultad");
 const textoMovimientos = document.querySelector("#movimientos");
@@ -18,11 +17,10 @@ const sliderColumnas = document.querySelector("#columnas");
 const valorFilas = document.querySelector("#valor-filas");
 const valorColumnas = document.querySelector("#valor-columnas");
 
-btnIniciar.addEventListener("click", iniciarJuego);
-btnReiniciar.addEventListener("click", reiniciarJuego);
+btnReiniciar.addEventListener("click", iniciarJuego);
 selectDificultad.addEventListener("change", iniciarJuego);
-sliderFilas.addEventListener("input", actualizarValoresDimensiones);
-sliderColumnas.addEventListener("input", actualizarValoresDimensiones);
+sliderFilas.addEventListener("change", actualizarValoresDimensiones);
+sliderColumnas.addEventListener("change", actualizarValoresDimensiones);
 
 document.addEventListener("keydown", (event) => {
   if (event.key.toLowerCase() === "t") {
@@ -30,26 +28,10 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-iniciar();
-
-function iniciar() {
-  iniciarJuego();
-}
-
-function reiniciarJuego() {
-  leerDimensiones();
-  btnIniciar.disabled = true;
-  crearTabla();
-  resetearMovimientos();
-
-  do {
-    hacerMovimientosAleatorios();
-  } while (estanApagadasTodasLasLuces());
-}
+iniciarJuego();
 
 function iniciarJuego() {
   leerDimensiones();
-  btnIniciar.disabled = true;
   crearTabla();
   resetearMovimientos();
   do {
@@ -65,8 +47,6 @@ function leerDimensiones() {
 function actualizarValoresDimensiones() {
   valorFilas.value = sliderFilas.value;
   valorColumnas.value = sliderColumnas.value;
-  valorFilas.textContent = sliderFilas.value;
-  valorColumnas.textContent = sliderColumnas.value;
   iniciarJuego();
 }
 
@@ -163,24 +143,11 @@ function resetearMovimientos() {
 }
 
 function estanApagadasTodasLasLuces() {
-  let victoria = true;
-  for (let i = 0; i < filas; i++) {
-    for (let j = 0; j < columnas; j++) {
-      if (luces[i][j]) {
-        victoria = false;
-        break;
-      }
-    }
-    if (!victoria) {
-      break;
-    }
-  }
-  return victoria;
+	return luces.every(fila => fila.every(luz => !luz));
 }
 
 function comprobarVictoria() {
   if (estanApagadasTodasLasLuces()) {
-    btnIniciar.disabled = false;
     for (let i = 0; i < filas; i++) {
       for (let j = 0; j < columnas; j++) {
         lucesBotones[i][j].disabled = true;
