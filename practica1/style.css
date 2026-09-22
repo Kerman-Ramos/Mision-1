@@ -71,7 +71,7 @@ main{
 }
 
 .luces{
-	width: 6.3vw;
+	width: 6.4vw;
 	aspect-ratio: 1;
 	margin: 5px;
 	background-color: var(--luz-off);;
