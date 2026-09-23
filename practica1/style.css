@@ -138,7 +138,7 @@ main{
 	width: 6.4vw;
 	aspect-ratio: 1;
 	margin: 5px;
-	background-color: var(--luz-off);;
+	background-color: var(--luz-off);
 	border: none;
 	border-radius: 50%;
 	cursor: pointer;
