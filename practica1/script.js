@@ -23,6 +23,11 @@ sliderFilas.addEventListener("change", iniciarJuego);
 sliderColumnas.addEventListener("change", iniciarJuego);
 sliderFilas.addEventListener("input", actualizarValoresDimensiones);
 sliderColumnas.addEventListener("input", actualizarValoresDimensiones);
+contenedorLuces.addEventListener("click", (event) => {
+	const button = event.target.closest(".luces");
+	if (isNaN(button))
+		hacerMovimiento(button);
+});
 
 document.addEventListener("keydown", (event) => {
 	if (event.key.toLowerCase() === "t") {
@@ -72,7 +77,6 @@ function crearTabla() {
 
 		boton.dataset.fila = i;
 		boton.dataset.col = j;
-		boton.addEventListener("click", hacerMovimiento);
 
 		filaDiv.appendChild(boton);
 
@@ -88,28 +92,22 @@ function crearTabla() {
 
 function hacerMovimientosAleatorios() {
 	const dificultad = selectDificultad.value;
-
-	let movimientosIniciales = filas;
-
-	if (dificultad === "medio" || dificultad === "dificil") {
-	movimientosIniciales *= columnas;
-	if (dificultad === "dificil") {
-		movimientosIniciales *= 2;
-	}
-	}
+	const movimientosIniciales = dificultad === "facil" ? filas : dificultad === "medio" ? filas * columnas : filas * columnas * 2;
 
 	let ultimaFila = -1;
 	let ultimaCol = -1;
+	
 	for (let i = 0; i < movimientosIniciales; i++) {
-	let rFila, rCol;
-	do {
-		rFila = Math.floor(Math.random() * filas);
-		rCol = Math.floor(Math.random() * columnas);
-	} while (rFila === ultimaFila && rCol === ultimaCol && (filas > 1 || columnas > 1));
+		let rFila = 0, rCol = 0;
+		do {
+			rFila = Math.floor(Math.random() * filas);
+			rCol = Math.floor(Math.random() * columnas);
+		} while (rFila === ultimaFila && rCol === ultimaCol && (filas > 1 || columnas > 1));
 
-	ultimaFila = rFila;
-	ultimaCol = rCol;
-	seleccionarLuces(rFila, rCol);
+		ultimaFila = rFila;
+		ultimaCol = rCol;
+		
+		seleccionarLuces(rFila, rCol);
 	}
 }
 
@@ -128,12 +126,12 @@ function cambiarEstado(fila, columna) {
 }
 }
 
-function hacerMovimiento(e) {
+function hacerMovimiento(event) {
 	movimientos++;
 	textoMovimientos.textContent = `Movimientos: ${movimientos}`;
 
-	const fila = parseInt(e.target.dataset.fila, 10);
-	const col = parseInt(e.target.dataset.col, 10);
+	const fila = parseInt(event.dataset.fila, 10);
+	const col = parseInt(event.dataset.col, 10);
 
 	seleccionarLuces(fila, col);
 	comprobarVictoria();

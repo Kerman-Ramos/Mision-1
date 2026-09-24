@@ -5,25 +5,25 @@
 }
 
 :root {
-  --bg-body: #27272a;
-  --bg-surface: #18181b;
-  --bg-boton: #3f3f46;
-  --text-main: #ffffff;
-  --text-secondary: #a1a1aa;
-  --border-subtle: #3f3f46;
-  --luz-on: #22c55e;
-  --luz-off: #3f3f46;
+	--bg-body: #27272a;
+	--bg-surface: #18181b;
+	--bg-boton: #3f3f46;
+	--text-main: #ffffff;
+	--text-secondary: #a1a1aa;
+	--border-subtle: #3f3f46;
+	--luz-on: #22c55e;
+	--luz-off: #3f3f46;
 }
 
 body.theme-light {
-  --bg-body: #e4e4e7;
-  --bg-surface: #ffffff;
-  --bg-boton: #d4d4d8;
-  --text-main: #18181b;
-  --text-secondary: #52525b;
-  --border-subtle: #d4d4d8;
-  --luz-on: #22c55e;
-  --luz-off: #d4d4d8;
+	--bg-body: #e4e4e7;
+	--bg-surface: #ffffff;
+	--bg-boton: #d4d4d8;
+	--text-main: #18181b;
+	--text-secondary: #52525b;
+	--border-subtle: #d4d4d8;
+	--luz-on: #22c55e;
+	--luz-off: #d4d4d8;
 }
 
 body{
@@ -149,7 +149,7 @@ main{
 }
 
 .luces:active {
-  transform: scale(0.94);
+	transform: scale(0.94);
 }
 
 #movimientos{
@@ -175,11 +175,7 @@ main{
 	cursor: pointer;
 }
 
-.boton:hover{
-	background-color: var(--bg-boton);
-}
-
-button:hover{
+button:hover, #dificultad:hover{
 	filter: brightness(1.4);
 }
 
