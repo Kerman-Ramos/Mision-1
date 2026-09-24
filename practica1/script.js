@@ -5,8 +5,7 @@ const COLUMNAS_MAX = 8;
 
 let movimientos = 0;
 let filas = 0, columnas = 0;
-const luces = [];
-const lucesBotones = [];
+const tablero = [];
 
 const btnReiniciar = document.querySelector("#reiniciar");
 const selectDificultad = document.querySelector("#dificultad");
@@ -25,7 +24,7 @@ sliderFilas.addEventListener("input", actualizarValoresDimensiones);
 sliderColumnas.addEventListener("input", actualizarValoresDimensiones);
 contenedorLuces.addEventListener("click", (event) => {
 	const button = event.target.closest(".luces");
-	if (isNaN(button))
+	if (button)
 		hacerMovimiento(button);
 });
 
@@ -59,8 +58,8 @@ function actualizarValoresDimensiones() {
 
 function crearTabla() {
 	contenedorLuces.textContent = "";
-	luces.length = 0;
-	lucesBotones.length = 0;
+
+	tablero.length = 0;
 
 	const fragmento = document.createDocumentFragment();
 
@@ -69,8 +68,7 @@ function crearTabla() {
 		filaDiv.id = `fila_${i}`;
 		filaDiv.classList.add("tablero");
 
-		luces[i] = [];
-		lucesBotones[i] = [];
+		tablero[i] = [];
 		for (let j = 0; j < columnas; j++) {
 			const boton = document.createElement("button");
 			boton.classList.add("luces");
@@ -78,10 +76,15 @@ function crearTabla() {
 			boton.dataset.fila = i;
 			boton.dataset.col = j;
 
+			boton.setAttribute("aria-label", `Luz fila ${i + 1}, columna ${j + 1}`);
+			boton.setAttribute("aria-pressed", "false");
+
 			filaDiv.appendChild(boton);
 
-			luces[i][j] = false;
-			lucesBotones[i][j] = boton;
+			tablero[i][j] = {
+                estado: false,
+                boton: boton
+            };
 		}
 
 		fragmento.appendChild(filaDiv);
@@ -92,7 +95,16 @@ function crearTabla() {
 
 function hacerMovimientosAleatorios() {
 	const dificultad = selectDificultad.value;
-	const movimientosIniciales = dificultad === "facil" ? filas : dificultad === "medio" ? filas * columnas : filas * columnas * 2;
+
+	let movimientosIniciales = filas;
+
+	if (dificultad === "medio" || dificultad === "dificil") {
+		movimientosIniciales *= columnas;
+
+		if (dificultad === "dificil") {
+			movimientosIniciales *= 2;
+		}
+	}
 
 	let ultimaFila = -1;
 	let ultimaCol = -1;
@@ -120,10 +132,17 @@ function seleccionarLuces(fila, columna) {
 }
 
 function cambiarEstado(fila, columna) {
-	if (fila >= 0 && fila < filas && columna >= 0 && columna < columnas) {
-		luces[fila][columna] = !luces[fila][columna];
-		lucesBotones[fila][columna].classList.toggle("on", luces[fila][columna]);
+	if (estaDentroDelTablero(fila, columna)) {
+		const celda = tablero[fila][columna];
+		celda.estado = !celda.estado;
+		
+		celda.boton.classList.toggle("on", celda.estado);
+		celda.boton.setAttribute("aria-pressed", celda.estado);
 	}
+}
+
+function estaDentroDelTablero(fila, columna) {
+	return fila >= 0 && fila < filas && columna >= 0 && columna < columnas;
 }
 
 function hacerMovimiento(event) {
@@ -143,14 +162,14 @@ function resetearMovimientos() {
 }
 
 function estanApagadasTodasLasLuces() {
-	return luces.every(fila => fila.every(luz => !luz));
+	return tablero.every(fila => fila.every(luz => !luz.estado));
 }
 
 function comprobarVictoria() {
 	if (estanApagadasTodasLasLuces()) {
 	for (let i = 0; i < filas; i++) {
 		for (let j = 0; j < columnas; j++) {
-		lucesBotones[i][j].disabled = true;
+			tablero[i][j].boton.disabled = true;
 		}
 	}
 	setTimeout(() => {
