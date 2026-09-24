@@ -65,26 +65,26 @@ function crearTabla() {
 	const fragmento = document.createDocumentFragment();
 
 	for (let i = 0; i < filas; i++) {
-	const filaDiv = document.createElement("div");
-	filaDiv.id = `fila_${i}`;
-	filaDiv.classList.add("tablero");
+		const filaDiv = document.createElement("div");
+		filaDiv.id = `fila_${i}`;
+		filaDiv.classList.add("tablero");
 
-	luces[i] = [];
-	lucesBotones[i] = [];
-	for (let j = 0; j < columnas; j++) {
-		const boton = document.createElement("button");
-		boton.classList.add("luces");
+		luces[i] = [];
+		lucesBotones[i] = [];
+		for (let j = 0; j < columnas; j++) {
+			const boton = document.createElement("button");
+			boton.classList.add("luces");
 
-		boton.dataset.fila = i;
-		boton.dataset.col = j;
+			boton.dataset.fila = i;
+			boton.dataset.col = j;
 
-		filaDiv.appendChild(boton);
+			filaDiv.appendChild(boton);
 
-		luces[i][j] = false;
-		lucesBotones[i][j] = boton;
-	}
+			luces[i][j] = false;
+			lucesBotones[i][j] = boton;
+		}
 
-	fragmento.appendChild(filaDiv);
+		fragmento.appendChild(filaDiv);
 	}
 
 	contenedorLuces.appendChild(fragmento);
@@ -121,9 +121,9 @@ function seleccionarLuces(fila, columna) {
 
 function cambiarEstado(fila, columna) {
 	if (fila >= 0 && fila < filas && columna >= 0 && columna < columnas) {
-	luces[fila][columna] = !luces[fila][columna];
-	lucesBotones[fila][columna].classList.toggle("on", luces[fila][columna]);
-}
+		luces[fila][columna] = !luces[fila][columna];
+		lucesBotones[fila][columna].classList.toggle("on", luces[fila][columna]);
+	}
 }
 
 function hacerMovimiento(event) {
