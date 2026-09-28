@@ -41,17 +41,21 @@ actualizarValoresDimensiones();
 iniciarJuego();
 
 function iniciarJuego() {
-	leerDimensiones();
-	crearTabla();
+	if(leerDimensiones())
+		crearTabla();
 	resetearMovimientos();
+
 	do {
 		hacerMovimientosAleatorios();
 	} while (estanApagadasTodasLasLuces());
 }
 
 function leerDimensiones() {
+	let filas=estadoJuego.filas, columnas=estadoJuego.columnas;
 	estadoJuego.filas = parseInt(sliderFilas.value, 10);
 	estadoJuego.columnas = parseInt(sliderColumnas.value, 10);
+
+	return (filas === estadoJuego.filas && columnas === estadoJuego.columnas);
 }
 
 function actualizarValoresDimensiones() {
@@ -170,13 +174,14 @@ function estanApagadasTodasLasLuces() {
 
 function comprobarVictoria() {
 	if (estanApagadasTodasLasLuces()) {
-	for (let i = 0; i < estadoJuego.filas; i++) {
-		for (let j = 0; j < estadoJuego.columnas; j++) {
-			estadoJuego.tablero[i][j].boton.disabled = true;
+		for (let i = 0; i < estadoJuego.filas; i++) {
+			for (let j = 0; j < estadoJuego.columnas; j++) {
+				estadoJuego.tablero[i][j].boton.disabled = true;
+			}
 		}
 	}
+	
 	setTimeout(() => {
 		alert(`¡Felicidades! Has ganado el juego en ${movimientos} movimientos.`);
 	}, 100);
-	}
 }
