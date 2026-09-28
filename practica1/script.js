@@ -7,6 +7,7 @@ const estadoJuego = {
 	movimientos : 0,
 	filas : 0,
 	columnas : 0,
+	numeroMovimientos : 0,
 	tablero : [],
 }
 
@@ -43,11 +44,27 @@ iniciarJuego();
 function iniciarJuego() {
 	if(leerDimensiones())
 		crearTabla();
+	else
+		establecerMovimientosIniciales();
 	resetearMovimientos();
 
 	do {
 		hacerMovimientosAleatorios();
 	} while (estanApagadasTodasLasLuces());
+}
+
+function establecerMovimientosIniciales() {
+	const dificultad = selectDificultad.value;
+	let movimientosIniciales = estadoJuego.filas;
+
+	if (dificultad === "medio" || dificultad === "dificil") {
+		movimientosIniciales *= estadoJuego.columnas;
+
+		if (dificultad === "dificil") {
+			movimientosIniciales *= 2;
+		}
+	}
+	estadoJuego.movimientosIniciales = movimientosIniciales;
 }
 
 function leerDimensiones() {
@@ -101,22 +118,12 @@ function crearTabla() {
 }
 
 function hacerMovimientosAleatorios() {
-	const dificultad = selectDificultad.value;
-
-	let movimientosIniciales = estadoJuego.filas;
-
-	if (dificultad === "medio" || dificultad === "dificil") {
-		movimientosIniciales *= estadoJuego.columnas;
-
-		if (dificultad === "dificil") {
-			movimientosIniciales *= 2;
-		}
-	}
+	
 
 	let ultimaFila = -1;
 	let ultimaCol = -1;
 	
-	for (let i = 0; i < movimientosIniciales; i++) {
+	for (let i = 0; i < estadoJuego.movimientosIniciales; i++) {
 		let rFila = 0, rCol = 0;
 		do {
 			rFila = Math.floor(Math.random() * estadoJuego.filas);
@@ -180,7 +187,7 @@ function comprobarVictoria() {
 			}
 		}
 	}
-	
+
 	setTimeout(() => {
 		alert(`¡Felicidades! Has ganado el juego en ${movimientos} movimientos.`);
 	}, 100);
