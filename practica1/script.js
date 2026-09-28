@@ -2,6 +2,7 @@ const FILAS_MIN = 2;
 const FILAS_MAX = 5;
 const COLUMNAS_MIN = 2;
 const COLUMNAS_MAX = 8;
+const multiplicadorDificultad = 2;
 
 const estadoJuego = {
 	movimientos : 0,
@@ -39,7 +40,13 @@ document.addEventListener("keydown", (event) => {
 });
 
 actualizarValoresDimensiones();
-iniciarJuego();
+iniciar();
+
+function iniciar() {
+	leerDimensiones();
+	crearTabla();
+	iniciarJuego();
+}
 
 function iniciarJuego() {
 	if(leerDimensiones())
@@ -61,7 +68,7 @@ function establecerMovimientosIniciales() {
 		movimientosIniciales *= estadoJuego.columnas;
 
 		if (dificultad === "dificil") {
-			movimientosIniciales *= 2;
+			movimientosIniciales *= multiplicadorDificultad;
 		}
 	}
 	estadoJuego.movimientosIniciales = movimientosIniciales;
@@ -72,7 +79,7 @@ function leerDimensiones() {
 	estadoJuego.filas = parseInt(sliderFilas.value, 10);
 	estadoJuego.columnas = parseInt(sliderColumnas.value, 10);
 
-	return (filas === estadoJuego.filas && columnas === estadoJuego.columnas);
+	return (filas !== estadoJuego.filas || columnas !== estadoJuego.columnas);
 }
 
 function actualizarValoresDimensiones() {
@@ -160,8 +167,8 @@ function estaDentroDelTablero(fila, columna) {
 }
 
 function hacerMovimiento(boton) {
-	movimientos++;
-	textoMovimientos.textContent = `Movimientos: ${movimientos}`;
+	estadoJuego.movimientos++;
+	textoMovimientos.textContent = `Movimientos: ${estadoJuego.movimientos}`;
 
 	const fila = parseInt(boton.dataset.fila, 10);
 	const col = parseInt(boton.dataset.col, 10);
@@ -171,8 +178,8 @@ function hacerMovimiento(boton) {
 }
 
 function resetearMovimientos() {
-	movimientos = 0;
-	textoMovimientos.textContent = `Movimientos: ${movimientos}`;
+	estadoJuego.movimientos = 0;
+	textoMovimientos.textContent = `Movimientos: ${estadoJuego.movimientos}`;
 }
 
 function estanApagadasTodasLasLuces() {
@@ -186,9 +193,9 @@ function comprobarVictoria() {
 				estadoJuego.tablero[i][j].boton.disabled = true;
 			}
 		}
-	}
 
-	setTimeout(() => {
-		alert(`¡Felicidades! Has ganado el juego en ${movimientos} movimientos.`);
-	}, 100);
+		setTimeout(() => {
+			alert(`¡Felicidades! Has ganado el juego en ${estadoJuego.movimientos} movimientos.`);
+		}, 100);
+	}
 }
