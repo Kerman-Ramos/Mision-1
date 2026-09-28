@@ -2,13 +2,16 @@ const FILAS_MIN = 2;
 const FILAS_MAX = 5;
 const COLUMNAS_MIN = 2;
 const COLUMNAS_MAX = 8;
-const multiplicadorDificultad = 2;
-
+const CONFIG_DIFICULTAD = {
+    "facil": () => estado.filas,
+    "medio": () => estado.filas * estado.columnas,
+    "dificil": () => estado.filas * estado.columnas * 2
+};
 const estadoJuego = {
 	movimientos : 0,
 	filas : 0,
 	columnas : 0,
-	numeroMovimientos : 0,
+	movimientosIniciales : 0,
 	tablero : [],
 }
 
@@ -45,7 +48,9 @@ iniciar();
 function iniciar() {
 	leerDimensiones();
 	crearTabla();
-	iniciarJuego();
+	establecerMovimientosIniciales();
+	movimientosIniciales();
+
 }
 
 function iniciarJuego() {
@@ -53,6 +58,10 @@ function iniciarJuego() {
 		crearTabla();
 	else
 		establecerMovimientosIniciales();
+	movimientosIniciales();
+}
+
+function movimientosIniciales() {
 	resetearMovimientos();
 
 	do {
@@ -62,16 +71,7 @@ function iniciarJuego() {
 
 function establecerMovimientosIniciales() {
 	const dificultad = selectDificultad.value;
-	let movimientosIniciales = estadoJuego.filas;
-
-	if (dificultad === "medio" || dificultad === "dificil") {
-		movimientosIniciales *= estadoJuego.columnas;
-
-		if (dificultad === "dificil") {
-			movimientosIniciales *= multiplicadorDificultad;
-		}
-	}
-	estadoJuego.movimientosIniciales = movimientosIniciales;
+	estadoJuego.movimientosIniciales = CONFIG_DIFICULTAD[dificultad]();;
 }
 
 function leerDimensiones() {
