@@ -3,9 +3,9 @@ const FILAS_MAX = 5;
 const COLUMNAS_MIN = 2;
 const COLUMNAS_MAX = 8;
 const CONFIG_DIFICULTAD = {
-    "facil": () => estado.filas,
-    "medio": () => estado.filas * estado.columnas,
-    "dificil": () => estado.filas * estado.columnas * 2
+    "facil": () => estadoJuego.filas,
+    "medio": () => estadoJuego.filas * estadoJuego.columnas,
+    "dificil": () => estadoJuego.filas * estadoJuego.columnas * 2
 };
 const estadoJuego = {
 	movimientos : 0,
