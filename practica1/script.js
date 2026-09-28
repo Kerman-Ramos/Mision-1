@@ -43,30 +43,33 @@ document.addEventListener("keydown", (event) => {
 });
 
 actualizarValoresDimensiones();
-iniciar();
-
-function iniciar() {
-	leerDimensiones();
-	crearTabla();
-	establecerMovimientosIniciales();
-	movimientosIniciales();
-
-}
+iniciarJuego();
 
 function iniciarJuego() {
-	if(leerDimensiones())
+	const dimensionesCambiadas = leerDimensiones();
+
+	if (dimensionesCambiadas || estadoJuego.tablero.length === 0) {
 		crearTabla();
-	else
-		establecerMovimientosIniciales();
-	movimientosIniciales();
-}
-
-function movimientosIniciales() {
+	} else {
+		apagarTodasLasLuces();
+	}
+	establecerMovimientosIniciales();
+	
 	resetearMovimientos();
-
 	do {
 		hacerMovimientosAleatorios();
 	} while (estanApagadasTodasLasLuces());
+}
+
+function apagarTodasLasLuces() {
+	estadoJuego.tablero.forEach(fila => {
+        fila.forEach(celda => {
+            celda.estado = false;
+            celda.boton.classList.remove("on");
+            celda.boton.setAttribute("aria-pressed", "false");
+            celda.boton.disabled = false; // Reactivamos por si venimos de una victoria
+        });
+    });
 }
 
 function establecerMovimientosIniciales() {
