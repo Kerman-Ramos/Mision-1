@@ -3,9 +3,12 @@ const FILAS_MAX = 5;
 const COLUMNAS_MIN = 2;
 const COLUMNAS_MAX = 8;
 
-let movimientos = 0;
-let filas = 0, columnas = 0;
-const tablero = [];
+const estadoJuego = {
+	movimientos : 0,
+	filas : 0,
+	columnas : 0,
+	tablero : [],
+}
 
 const btnReiniciar = document.querySelector("#reiniciar");
 const selectDificultad = document.querySelector("#dificultad");
@@ -47,8 +50,8 @@ function iniciarJuego() {
 }
 
 function leerDimensiones() {
-	filas = parseInt(sliderFilas.value, 10);
-	columnas = parseInt(sliderColumnas.value, 10);
+	estadoJuego.filas = parseInt(sliderFilas.value, 10);
+	estadoJuego.columnas = parseInt(sliderColumnas.value, 10);
 }
 
 function actualizarValoresDimensiones() {
@@ -59,17 +62,17 @@ function actualizarValoresDimensiones() {
 function crearTabla() {
 	contenedorLuces.textContent = "";
 
-	tablero.length = 0;
+	estadoJuego.tablero.length = 0;
 
 	const fragmento = document.createDocumentFragment();
 
-	for (let i = 0; i < filas; i++) {
+	for (let i = 0; i < estadoJuego.filas; i++) {
 		const filaDiv = document.createElement("div");
 		filaDiv.id = `fila_${i}`;
 		filaDiv.classList.add("tablero");
 
-		tablero[i] = [];
-		for (let j = 0; j < columnas; j++) {
+		estadoJuego.tablero[i] = [];
+		for (let j = 0; j < estadoJuego.columnas; j++) {
 			const boton = document.createElement("button");
 			boton.classList.add("luces");
 
@@ -81,7 +84,7 @@ function crearTabla() {
 
 			filaDiv.appendChild(boton);
 
-			tablero[i][j] = {
+			estadoJuego.tablero[i][j] = {
                 estado: false,
                 boton: boton
             };
@@ -96,10 +99,10 @@ function crearTabla() {
 function hacerMovimientosAleatorios() {
 	const dificultad = selectDificultad.value;
 
-	let movimientosIniciales = filas;
+	let movimientosIniciales = estadoJuego.filas;
 
 	if (dificultad === "medio" || dificultad === "dificil") {
-		movimientosIniciales *= columnas;
+		movimientosIniciales *= estadoJuego.columnas;
 
 		if (dificultad === "dificil") {
 			movimientosIniciales *= 2;
@@ -112,9 +115,9 @@ function hacerMovimientosAleatorios() {
 	for (let i = 0; i < movimientosIniciales; i++) {
 		let rFila = 0, rCol = 0;
 		do {
-			rFila = Math.floor(Math.random() * filas);
-			rCol = Math.floor(Math.random() * columnas);
-		} while (rFila === ultimaFila && rCol === ultimaCol && (filas > 1 || columnas > 1));
+			rFila = Math.floor(Math.random() * estadoJuego.filas);
+			rCol = Math.floor(Math.random() * estadoJuego.columnas);
+		} while (rFila === ultimaFila && rCol === ultimaCol && (estadoJuego.filas > 1 || estadoJuego.columnas > 1));
 
 		ultimaFila = rFila;
 		ultimaCol = rCol;
@@ -133,7 +136,7 @@ function seleccionarLuces(fila, columna) {
 
 function cambiarEstado(fila, columna) {
 	if (estaDentroDelTablero(fila, columna)) {
-		const celda = tablero[fila][columna];
+		const celda = estadoJuego.tablero[fila][columna];
 		celda.estado = !celda.estado;
 		
 		celda.boton.classList.toggle("on", celda.estado);
@@ -142,15 +145,15 @@ function cambiarEstado(fila, columna) {
 }
 
 function estaDentroDelTablero(fila, columna) {
-	return fila >= 0 && fila < filas && columna >= 0 && columna < columnas;
+	return fila >= 0 && fila < estadoJuego.filas && columna >= 0 && columna < estadoJuego.columnas;
 }
 
-function hacerMovimiento(event) {
+function hacerMovimiento(boton) {
 	movimientos++;
 	textoMovimientos.textContent = `Movimientos: ${movimientos}`;
 
-	const fila = parseInt(event.dataset.fila, 10);
-	const col = parseInt(event.dataset.col, 10);
+	const fila = parseInt(boton.dataset.fila, 10);
+	const col = parseInt(boton.dataset.col, 10);
 
 	seleccionarLuces(fila, col);
 	comprobarVictoria();
@@ -162,14 +165,14 @@ function resetearMovimientos() {
 }
 
 function estanApagadasTodasLasLuces() {
-	return tablero.every(fila => fila.every(luz => !luz.estado));
+	return estadoJuego.tablero.every(fila => fila.every(luz => !luz.estado));
 }
 
 function comprobarVictoria() {
 	if (estanApagadasTodasLasLuces()) {
-	for (let i = 0; i < filas; i++) {
-		for (let j = 0; j < columnas; j++) {
-			tablero[i][j].boton.disabled = true;
+	for (let i = 0; i < estadoJuego.filas; i++) {
+		for (let j = 0; j < estadoJuego.columnas; j++) {
+			estadoJuego.tablero[i][j].boton.disabled = true;
 		}
 	}
 	setTimeout(() => {
