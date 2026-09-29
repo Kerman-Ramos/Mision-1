@@ -15,7 +15,7 @@ const estadoJuego = {
     filas: 0,
     columnas: 0,
     movimientosIniciales: 0,
-    tablero: [], // Ahora almacena exclusivamente lógica pura (booleanos)
+    tablero: [],
 };
 
 const btnReiniciar = document.querySelector("#reiniciar");
@@ -49,8 +49,7 @@ actualizarValoresDimensiones();
 iniciarJuego();
 
 function iniciarJuego() {
-    // Destruye el modal de victoria si existe de una partida anterior
-    document.getElementById("mensaje-victoria")?.remove();
+    document.getElementById("mensaje-victoria").classList.remove("visible");
 
     const dimensionesCambiadas = leerDimensiones();
 
@@ -205,11 +204,8 @@ function comprobarVictoria() {
         todosLosBotones.forEach(btn => btn.disabled = true);
 
         setTimeout(() => {
-            const modal = document.createElement("div");
-            modal.id = "mensaje-victoria";
-            modal.innerHTML = `<p>¡Felicidades!</p><p>Has ganado en <strong>${estadoJuego.movimientos}</strong> movimientos.</p>`;
-            
-            document.body.appendChild(modal);
+            document.getElementById("movimientos-finales").textContent = estadoJuego.movimientos;
+            document.getElementById("mensaje-victoria").classList.add("visible");
         }, 100);
     }
 }
