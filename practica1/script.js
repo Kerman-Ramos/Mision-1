@@ -15,7 +15,7 @@ const estadoJuego = {
     filas: 0,
     columnas: 0,
     movimientosIniciales: 0,
-    tablero: [],
+    tablero: [], 
 };
 
 const btnReiniciar = document.querySelector("#reiniciar");
@@ -49,7 +49,7 @@ actualizarValoresDimensiones();
 iniciarJuego();
 
 function iniciarJuego() {
-    document.getElementById("mensaje-victoria").classList.remove("visible");
+    document.getElementById("mensaje-victoria")?.classList.remove("visible");
 
     const dimensionesCambiadas = leerDimensiones();
 
@@ -62,7 +62,6 @@ function iniciarJuego() {
     establecerMovimientosIniciales();
     resetearMovimientos();
     
-    // Salvaguarda: Evita bloqueos del navegador en matrices diminutas
     let intentos = 0;
     do {
         hacerMovimientosAleatorios();
@@ -70,19 +69,16 @@ function iniciarJuego() {
     } while (estanApagadasTodasLasLuces() && intentos < 50);
 }
 
+// Optimización: Uso directo de la referencia cacheada en el array
 function apagarTodasLasLuces() {
-    for (let i = 0; i < estadoJuego.filas; i++) {
-        for (let j = 0; j < estadoJuego.columnas; j++) {
-            estadoJuego.tablero[i][j] = false;
-            
-            const boton = contenedorLuces.querySelector(`[data-fila="${i}"][data-col="${j}"]`);
-            if (boton) {
-                boton.classList.remove("on");
-                boton.setAttribute("aria-pressed", "false");
-                boton.disabled = false; 
-            }
-        }
-    }
+    estadoJuego.tablero.forEach(fila => {
+        fila.forEach(celda => {
+            celda.estado = false;
+            celda.boton.classList.remove("on");
+            celda.boton.setAttribute("aria-pressed", "false");
+            celda.boton.disabled = false;
+        });
+    });
 }
 
 function establecerMovimientosIniciales() {
@@ -125,8 +121,11 @@ function crearTabla() {
 
             filaDiv.appendChild(boton);
 
-            // Se almacena estrictamente el estado booleano
-            estadoJuego.tablero[i][j] = false;
+            // Recuperamos el modelo de datos eficiente
+            estadoJuego.tablero[i][j] = {
+                estado: false,
+                boton: boton
+            };
         }
         fragmento.appendChild(filaDiv);
     }
@@ -159,18 +158,14 @@ function seleccionarLuces(fila, columna) {
     cambiarEstado(fila, columna + 1);
 }
 
+// Optimización: Cero lecturas de DOM, acceso directo a memoria
 function cambiarEstado(fila, columna) {
     if (estaDentroDelTablero(fila, columna)) {
-        // 1. Modificación del estado lógico
-        estadoJuego.tablero[fila][columna] = !estadoJuego.tablero[fila][columna];
-        const estaEncendida = estadoJuego.tablero[fila][columna];
+        const celda = estadoJuego.tablero[fila][columna];
+        celda.estado = !celda.estado;
         
-        // 2. Sincronización con la vista (DOM)
-        const boton = contenedorLuces.querySelector(`[data-fila="${fila}"][data-col="${columna}"]`);
-        if (boton) {
-            boton.classList.toggle("on", estaEncendida);
-            boton.setAttribute("aria-pressed", estaEncendida);
-        }
+        celda.boton.classList.toggle("on", celda.estado);
+        celda.boton.setAttribute("aria-pressed", celda.estado);
     }
 }
 
@@ -195,13 +190,13 @@ function resetearMovimientos() {
 }
 
 function estanApagadasTodasLasLuces() {
-    return estadoJuego.tablero.every(fila => fila.every(estadoBooleano => !estadoBooleano));
+    return estadoJuego.tablero.every(fila => fila.every(celda => !celda.estado));
 }
 
+// Optimización: Bloqueo usando las referencias del array
 function comprobarVictoria() {
     if (estanApagadasTodasLasLuces()) {
-        const todosLosBotones = contenedorLuces.querySelectorAll(".luces");
-        todosLosBotones.forEach(btn => btn.disabled = true);
+        estadoJuego.tablero.forEach(fila => fila.forEach(celda => celda.boton.disabled = true));
 
         setTimeout(() => {
             document.getElementById("movimientos-finales").textContent = estadoJuego.movimientos;
