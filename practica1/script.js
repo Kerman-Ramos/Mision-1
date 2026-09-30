@@ -11,10 +11,9 @@ const estadoJuego = {
     filas: 0,
     columnas: 0,
     movimientosIniciales: 0,
-    tablero: [], 
+    tablero: []
 };
 
-// Selección de nodos
 const btnReiniciar = document.querySelector("#reiniciar");
 const selectDificultad = document.querySelector("#dificultad");
 const textoMovimientos = document.querySelector("#movimientos");
@@ -26,6 +25,7 @@ const valorColumnas = document.querySelector("#valor-columnas");
 const modalVictoria = document.querySelector("#mensaje-victoria");
 const textoMovimientosFinales = document.querySelector("#movimientos-finales");
 
+
 function iniciarListeners() {
     btnReiniciar.addEventListener("click", iniciarJuego);
     selectDificultad.addEventListener("change", iniciarJuego);
@@ -36,7 +36,7 @@ function iniciarListeners() {
 
     contenedorLuces.addEventListener("click", (event) => {
         const button = event.target.closest(".luces");
-        if (button) hacerMovimiento(button);
+        if (button) hacerMovimiento(button); // Eliminado el frágil isNaN(button)
     });
 
     document.addEventListener("keydown", (event) => {
@@ -51,7 +51,7 @@ actualizarValoresDimensiones();
 iniciarJuego();
 
 function iniciarJuego() {
-    modalVictoria?.classList.remove("visible");
+	modalVictoria?.classList.remove("visible");
 
     const dimensionesCambiadas = leerDimensiones();
 
@@ -101,7 +101,7 @@ function actualizarValoresDimensiones() {
 }
 
 function crearTabla() {
-    contenedorLuces.textContent = "";
+contenedorLuces.textContent = "";
     estadoJuego.tablero.length = 0;
 
     const fragmento = document.createDocumentFragment();
@@ -117,6 +117,7 @@ function crearTabla() {
             boton.classList.add("luces");
             boton.dataset.fila = i;
             boton.dataset.col = j;
+            
             boton.setAttribute("aria-label", `Luz fila ${i + 1}, columna ${j + 1}`);
             boton.setAttribute("aria-pressed", "false");
 
@@ -197,8 +198,12 @@ function comprobarVictoria() {
         estadoJuego.tablero.forEach(fila => fila.forEach(celda => celda.boton.disabled = true));
 
         setTimeout(() => {
-            textoMovimientosFinales.textContent = estadoJuego.movimientos;
-            modalVictoria.classList.add("visible");
+            if (textoMovimientosFinales && modalVictoria) {
+                textoMovimientosFinales.textContent = estadoJuego.movimientos;
+                modalVictoria.classList.add("visible");
+            } else {
+                alert(`¡Felicidades! Has ganado el juego en ${estadoJuego.movimientos} movimientos.`);
+            }
         }, 100);
     }
 }
