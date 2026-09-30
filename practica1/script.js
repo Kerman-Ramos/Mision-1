@@ -1,7 +1,3 @@
-const FILAS_MIN = 2;
-const FILAS_MAX = 5;
-const COLUMNAS_MIN = 2;
-const COLUMNAS_MAX = 8;
 const multiplicadorDificultad = 2;
 
 const CONFIG_DIFICULTAD = {
@@ -18,6 +14,7 @@ const estadoJuego = {
     tablero: [], 
 };
 
+// Selección de nodos
 const btnReiniciar = document.querySelector("#reiniciar");
 const selectDificultad = document.querySelector("#dificultad");
 const textoMovimientos = document.querySelector("#movimientos");
@@ -26,30 +23,35 @@ const sliderFilas = document.querySelector("#filas");
 const sliderColumnas = document.querySelector("#columnas");
 const valorFilas = document.querySelector("#valor-filas");
 const valorColumnas = document.querySelector("#valor-columnas");
+const modalVictoria = document.querySelector("#mensaje-victoria");
+const textoMovimientosFinales = document.querySelector("#movimientos-finales");
 
-btnReiniciar.addEventListener("click", iniciarJuego);
-selectDificultad.addEventListener("change", iniciarJuego);
-sliderFilas.addEventListener("change", iniciarJuego);
-sliderColumnas.addEventListener("change", iniciarJuego);
-sliderFilas.addEventListener("input", actualizarValoresDimensiones);
-sliderColumnas.addEventListener("input", actualizarValoresDimensiones);
+function iniciarListeners() {
+    btnReiniciar.addEventListener("click", iniciarJuego);
+    selectDificultad.addEventListener("change", iniciarJuego);
+    sliderFilas.addEventListener("change", iniciarJuego);
+    sliderColumnas.addEventListener("change", iniciarJuego);
+    sliderFilas.addEventListener("input", actualizarValoresDimensiones);
+    sliderColumnas.addEventListener("input", actualizarValoresDimensiones);
 
-contenedorLuces.addEventListener("click", (event) => {
-    const button = event.target.closest(".luces");
-    if (button) hacerMovimiento(button);
-});
+    contenedorLuces.addEventListener("click", (event) => {
+        const button = event.target.closest(".luces");
+        if (button) hacerMovimiento(button);
+    });
 
-document.addEventListener("keydown", (event) => {
-    if (event.key.toLowerCase() === "t") {
-        document.body.classList.toggle("theme-light");
-    }
-});
+    document.addEventListener("keydown", (event) => {
+        if (event.key.toLowerCase() === "t") {
+            document.body.classList.toggle("theme-light");
+        }
+    });
+}
 
+iniciarListeners();
 actualizarValoresDimensiones();
 iniciarJuego();
 
 function iniciarJuego() {
-    document.getElementById("mensaje-victoria")?.classList.remove("visible");
+    modalVictoria?.classList.remove("visible");
 
     const dimensionesCambiadas = leerDimensiones();
 
@@ -69,7 +71,6 @@ function iniciarJuego() {
     } while (estanApagadasTodasLasLuces() && intentos < 50);
 }
 
-// Optimización: Uso directo de la referencia cacheada en el array
 function apagarTodasLasLuces() {
     estadoJuego.tablero.forEach(fila => {
         fila.forEach(celda => {
@@ -121,7 +122,6 @@ function crearTabla() {
 
             filaDiv.appendChild(boton);
 
-            // Recuperamos el modelo de datos eficiente
             estadoJuego.tablero[i][j] = {
                 estado: false,
                 boton: boton
@@ -158,7 +158,6 @@ function seleccionarLuces(fila, columna) {
     cambiarEstado(fila, columna + 1);
 }
 
-// Optimización: Cero lecturas de DOM, acceso directo a memoria
 function cambiarEstado(fila, columna) {
     if (estaDentroDelTablero(fila, columna)) {
         const celda = estadoJuego.tablero[fila][columna];
@@ -193,14 +192,13 @@ function estanApagadasTodasLasLuces() {
     return estadoJuego.tablero.every(fila => fila.every(celda => !celda.estado));
 }
 
-// Optimización: Bloqueo usando las referencias del array
 function comprobarVictoria() {
     if (estanApagadasTodasLasLuces()) {
         estadoJuego.tablero.forEach(fila => fila.forEach(celda => celda.boton.disabled = true));
 
         setTimeout(() => {
-            document.getElementById("movimientos-finales").textContent = estadoJuego.movimientos;
-            document.getElementById("mensaje-victoria").classList.add("visible");
+            textoMovimientosFinales.textContent = estadoJuego.movimientos;
+            modalVictoria.classList.add("visible");
         }, 100);
     }
 }
