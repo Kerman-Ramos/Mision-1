@@ -66,6 +66,9 @@ function iniciarJuego() {
     
     let intentos = 0;
     do {
+		if (intentos > 0){
+			apagarTodasLasLuces();
+		}
         hacerMovimientosAleatorios();
         intentos++;
     } while (estanApagadasTodasLasLuces() && intentos < 50);
@@ -117,6 +120,7 @@ function crearTabla() {
             boton.classList.add("luces");
             boton.dataset.fila = i;
             boton.dataset.col = j;
+			boton.setAttribute("aria-label", `Luz fila ${i + 1}, columna ${j + 1}`);
 
             filaDiv.appendChild(boton);
 
@@ -127,7 +131,7 @@ function crearTabla() {
 
 			inicializarCelda(celda);
 
-            estadoJuego.tablero[i][j] = nuevaCelda;
+            estadoJuego.tablero[i][j] = celda;
         }
         fragmento.appendChild(filaDiv);
     }
