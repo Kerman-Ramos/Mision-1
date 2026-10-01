@@ -71,15 +71,15 @@ function iniciarJuego() {
     } while (estanApagadasTodasLasLuces() && intentos < 50);
 }
 
+function inicializarCelda(celda) {
+    celda.estado = false;
+    celda.boton.classList.remove("on");
+    celda.boton.setAttribute("aria-pressed", "false");
+    celda.boton.disabled = false;
+}
+
 function apagarTodasLasLuces() {
-    estadoJuego.tablero.forEach(fila => {
-        fila.forEach(celda => {
-            celda.estado = false;
-            celda.boton.classList.remove("on");
-            celda.boton.setAttribute("aria-pressed", "false");
-            celda.boton.disabled = false;
-        });
-    });
+    estadoJuego.tablero.forEach(fila => fila.forEach(inicializarCelda));
 }
 
 function establecerMovimientosIniciales() {
@@ -101,7 +101,7 @@ function actualizarValoresDimensiones() {
 }
 
 function crearTabla() {
-contenedorLuces.textContent = "";
+	contenedorLuces.textContent = "";
     estadoJuego.tablero.length = 0;
 
     const fragmento = document.createDocumentFragment();
@@ -117,16 +117,17 @@ contenedorLuces.textContent = "";
             boton.classList.add("luces");
             boton.dataset.fila = i;
             boton.dataset.col = j;
-            
-            boton.setAttribute("aria-label", `Luz fila ${i + 1}, columna ${j + 1}`);
-            boton.setAttribute("aria-pressed", "false");
 
             filaDiv.appendChild(boton);
 
-            estadoJuego.tablero[i][j] = {
-                estado: false,
-                boton: boton
-            };
+			const celda = {
+				estado: false,
+				boton: boton
+			};
+
+			inicializarCelda(celda);
+
+            estadoJuego.tablero[i][j] = nuevaCelda;
         }
         fragmento.appendChild(filaDiv);
     }
