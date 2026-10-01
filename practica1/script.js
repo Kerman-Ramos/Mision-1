@@ -72,6 +72,11 @@ function iniciarJuego() {
         hacerMovimientosAleatorios();
         intentos++;
     } while (estanApagadasTodasLasLuces() && intentos < 50);
+
+	if (estanApagadasTodasLasLuces()) {
+        console.warn(`Caso límite detectado: Tras ${intentos} intentos, el tablero sigue apagado. Forzando asimetría.`);
+        seleccionarLuces(0, 0); 
+    }
 }
 
 function inicializarCelda(celda) {
@@ -121,6 +126,7 @@ function crearTabla() {
             boton.dataset.fila = i;
             boton.dataset.col = j;
 			boton.setAttribute("aria-label", `Luz fila ${i + 1}, columna ${j + 1}`);
+			boton.setAttribute("aria-pressed", "false");
 
             filaDiv.appendChild(boton);
 
@@ -128,8 +134,6 @@ function crearTabla() {
 				estado: false,
 				boton: boton
 			};
-
-			inicializarCelda(celda);
 
             estadoJuego.tablero[i][j] = celda;
         }
