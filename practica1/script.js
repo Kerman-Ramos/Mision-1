@@ -1,18 +1,11 @@
-const multiplicadorDificultad = 2;
+const FILAS_MIN = 2;
+const FILAS_MAX = 5;
+const COLUMNAS_MIN = 2;
+const COLUMNAS_MAX = 8;
 
-const CONFIG_DIFICULTAD = {
-    "facil": () => estadoJuego.filas,
-    "medio": () => estadoJuego.filas * estadoJuego.columnas,
-    "dificil": () => estadoJuego.filas * estadoJuego.columnas * multiplicadorDificultad
-};
-
-const estadoJuego = {
-    movimientos: 0,
-    filas: 0,
-    columnas: 0,
-    movimientosIniciales: 0,
-    tablero: []
-};
+let movimientos = 0;
+let filas = 0, columnas = 0;
+const tablero = [];
 
 const btnReiniciar = document.querySelector("#reiniciar");
 const selectDificultad = document.querySelector("#dificultad");
@@ -22,197 +15,165 @@ const sliderFilas = document.querySelector("#filas");
 const sliderColumnas = document.querySelector("#columnas");
 const valorFilas = document.querySelector("#valor-filas");
 const valorColumnas = document.querySelector("#valor-columnas");
-const modalVictoria = document.querySelector("#mensaje-victoria");
-const textoMovimientosFinales = document.querySelector("#movimientos-finales");
 
+btnReiniciar.addEventListener("click", iniciarJuego);
+selectDificultad.addEventListener("change", iniciarJuego);
+sliderFilas.addEventListener("change", iniciarJuego);
+sliderColumnas.addEventListener("change", iniciarJuego);
+sliderFilas.addEventListener("input", actualizarValoresDimensiones);
+sliderColumnas.addEventListener("input", actualizarValoresDimensiones);
+contenedorLuces.addEventListener("click", (event) => {
+	const button = event.target.closest(".luces");
+	if (button)
+		hacerMovimiento(button);
+});
 
-function iniciarListeners() {
-    btnReiniciar.addEventListener("click", iniciarJuego);
-    selectDificultad.addEventListener("change", iniciarJuego);
-    sliderFilas.addEventListener("change", iniciarJuego);
-    sliderColumnas.addEventListener("change", iniciarJuego);
-    sliderFilas.addEventListener("input", actualizarValoresDimensiones);
-    sliderColumnas.addEventListener("input", actualizarValoresDimensiones);
+document.addEventListener("keydown", (event) => {
+	if (event.key.toLowerCase() === "t") {
+		document.body.classList.toggle("theme-light");
+	}
+});
 
-    contenedorLuces.addEventListener("click", (event) => {
-        const button = event.target.closest(".luces");
-        if (button) hacerMovimiento(button); // Eliminado el frágil isNaN(button)
-    });
-
-    document.addEventListener("keydown", (event) => {
-        if (event.key.toLowerCase() === "t") {
-            document.body.classList.toggle("theme-light");
-        }
-    });
-}
-
-iniciarListeners();
 actualizarValoresDimensiones();
 iniciarJuego();
 
 function iniciarJuego() {
-	modalVictoria?.classList.remove("visible");
-
-    const dimensionesCambiadas = leerDimensiones();
-
-    if (dimensionesCambiadas || estadoJuego.tablero.length === 0) {
-        crearTabla();
-    } else {
-        apagarTodasLasLuces();
-    }
-    
-    establecerMovimientosIniciales();
-    resetearMovimientos();
-    
-    let intentos = 0;
-    do {
-		if (intentos > 0){
-			apagarTodasLasLuces();
-		}
-        hacerMovimientosAleatorios();
-        intentos++;
-    } while (estanApagadasTodasLasLuces() && intentos < 50);
-
-	if (estanApagadasTodasLasLuces()) {
-        console.warn(`Caso límite detectado: Tras ${intentos} intentos, el tablero sigue apagado. Forzando asimetría.`);
-        seleccionarLuces(0, 0); 
-    }
-}
-
-function inicializarCelda(celda) {
-    celda.estado = false;
-    celda.boton.classList.remove("on");
-    celda.boton.setAttribute("aria-pressed", "false");
-    celda.boton.disabled = false;
-}
-
-function apagarTodasLasLuces() {
-    estadoJuego.tablero.forEach(fila => fila.forEach(inicializarCelda));
-}
-
-function establecerMovimientosIniciales() {
-    const dificultad = selectDificultad.value;
-    estadoJuego.movimientosIniciales = CONFIG_DIFICULTAD[dificultad]();
+	leerDimensiones();
+	crearTabla();
+	resetearMovimientos();
+	do {
+		hacerMovimientosAleatorios();
+	} while (estanApagadasTodasLasLuces());
 }
 
 function leerDimensiones() {
-    let filas = estadoJuego.filas, columnas = estadoJuego.columnas;
-    estadoJuego.filas = parseInt(sliderFilas.value, 10);
-    estadoJuego.columnas = parseInt(sliderColumnas.value, 10);
-
-    return (filas !== estadoJuego.filas || columnas !== estadoJuego.columnas);
+	filas = parseInt(sliderFilas.value, 10);
+	columnas = parseInt(sliderColumnas.value, 10);
 }
 
 function actualizarValoresDimensiones() {
-    valorFilas.textContent = sliderFilas.value;
-    valorColumnas.textContent = sliderColumnas.value;
+	valorFilas.textContent = sliderFilas.value;
+	valorColumnas.textContent = sliderColumnas.value;
 }
 
 function crearTabla() {
 	contenedorLuces.textContent = "";
-    estadoJuego.tablero.length = 0;
 
-    const fragmento = document.createDocumentFragment();
+	tablero.length = 0;
 
-    for (let i = 0; i < estadoJuego.filas; i++) {
-        const filaDiv = document.createElement("div");
-        filaDiv.id = `fila_${i}`;
-        filaDiv.classList.add("tablero");
+	const fragmento = document.createDocumentFragment();
 
-        estadoJuego.tablero[i] = [];
-        for (let j = 0; j < estadoJuego.columnas; j++) {
-            const boton = document.createElement("button");
-            boton.classList.add("luces");
-            boton.dataset.fila = i;
-            boton.dataset.col = j;
+	for (let i = 0; i < filas; i++) {
+		const filaDiv = document.createElement("div");
+		filaDiv.id = `fila_${i}`;
+		filaDiv.classList.add("tablero");
+
+		tablero[i] = [];
+		for (let j = 0; j < columnas; j++) {
+			const boton = document.createElement("button");
+			boton.classList.add("luces");
+
+			boton.dataset.fila = i;
+			boton.dataset.col = j;
+
 			boton.setAttribute("aria-label", `Luz fila ${i + 1}, columna ${j + 1}`);
 			boton.setAttribute("aria-pressed", "false");
 
-            filaDiv.appendChild(boton);
+			filaDiv.appendChild(boton);
 
-			const celda = {
-				estado: false,
-				boton: boton
-			};
+			tablero[i][j] = {
+                estado: false,
+                boton: boton
+            };
+		}
 
-            estadoJuego.tablero[i][j] = celda;
-        }
-        fragmento.appendChild(filaDiv);
-    }
-    contenedorLuces.appendChild(fragmento);
+		fragmento.appendChild(filaDiv);
+	}
+
+	contenedorLuces.appendChild(fragmento);
 }
 
 function hacerMovimientosAleatorios() {
-    let ultimaFila = -1;
-    let ultimaCol = -1;
-    
-    for (let i = 0; i < estadoJuego.movimientosIniciales; i++) {
-        let rFila = 0, rCol = 0;
-        do {
-            rFila = Math.floor(Math.random() * estadoJuego.filas);
-            rCol = Math.floor(Math.random() * estadoJuego.columnas);
-        } while (rFila === ultimaFila && rCol === ultimaCol && (estadoJuego.filas > 1 || estadoJuego.columnas > 1));
+	const dificultad = selectDificultad.value;
 
-        ultimaFila = rFila;
-        ultimaCol = rCol;
-        
-        seleccionarLuces(rFila, rCol);
-    }
+	let movimientosIniciales = filas;
+
+	if (dificultad === "medio" || dificultad === "dificil") {
+		movimientosIniciales *= columnas;
+
+		if (dificultad === "dificil") {
+			movimientosIniciales *= 2;
+		}
+	}
+
+	let ultimaFila = -1;
+	let ultimaCol = -1;
+	
+	for (let i = 0; i < movimientosIniciales; i++) {
+		let rFila = 0, rCol = 0;
+		do {
+			rFila = Math.floor(Math.random() * filas);
+			rCol = Math.floor(Math.random() * columnas);
+		} while (rFila === ultimaFila && rCol === ultimaCol && (filas > 1 || columnas > 1));
+
+		ultimaFila = rFila;
+		ultimaCol = rCol;
+		
+		seleccionarLuces(rFila, rCol);
+	}
 }
 
 function seleccionarLuces(fila, columna) {
-    cambiarEstado(fila, columna);
-    cambiarEstado(fila - 1, columna);
-    cambiarEstado(fila + 1, columna);
-    cambiarEstado(fila, columna - 1);
-    cambiarEstado(fila, columna + 1);
+	cambiarEstado(fila, columna);
+	cambiarEstado(fila - 1, columna); // Luz de arriba
+	cambiarEstado(fila + 1, columna); // Luz de abajo
+	cambiarEstado(fila, columna - 1); // Luz de la izquierda
+	cambiarEstado(fila, columna + 1); // Luz de la derecha
 }
 
 function cambiarEstado(fila, columna) {
-    if (estaDentroDelTablero(fila, columna)) {
-        const celda = estadoJuego.tablero[fila][columna];
-        celda.estado = !celda.estado;
-        
-        celda.boton.classList.toggle("on", celda.estado);
-        celda.boton.setAttribute("aria-pressed", celda.estado);
-    }
+	if (estaDentroDelTablero(fila, columna)) {
+		const celda = tablero[fila][columna];
+		celda.estado = !celda.estado;
+		
+		celda.boton.classList.toggle("on", celda.estado);
+		celda.boton.setAttribute("aria-pressed", celda.estado);
+	}
 }
 
 function estaDentroDelTablero(fila, columna) {
-    return fila >= 0 && fila < estadoJuego.filas && columna >= 0 && columna < estadoJuego.columnas;
+	return fila >= 0 && fila < filas && columna >= 0 && columna < columnas;
 }
 
-function hacerMovimiento(boton) {
-    estadoJuego.movimientos++;
-    textoMovimientos.textContent = `Movimientos: ${estadoJuego.movimientos}`;
+function hacerMovimiento(event) {
+	movimientos++;
+	textoMovimientos.textContent = `Movimientos: ${movimientos}`;
 
-    const fila = parseInt(boton.dataset.fila, 10);
-    const col = parseInt(boton.dataset.col, 10);
+	const fila = parseInt(event.dataset.fila, 10);
+	const col = parseInt(event.dataset.col, 10);
 
-    seleccionarLuces(fila, col);
-    comprobarVictoria();
+	seleccionarLuces(fila, col);
+	comprobarVictoria();
 }
 
 function resetearMovimientos() {
-    estadoJuego.movimientos = 0;
-    textoMovimientos.textContent = `Movimientos: ${estadoJuego.movimientos}`;
+	movimientos = 0;
+	textoMovimientos.textContent = `Movimientos: ${movimientos}`;
 }
 
 function estanApagadasTodasLasLuces() {
-    return estadoJuego.tablero.every(fila => fila.every(celda => !celda.estado));
+	return tablero.every(fila => fila.every(luz => !luz.estado));
 }
 
 function comprobarVictoria() {
-    if (estanApagadasTodasLasLuces()) {
-        estadoJuego.tablero.forEach(fila => fila.forEach(celda => celda.boton.disabled = true));
-
-        setTimeout(() => {
-            if (textoMovimientosFinales && modalVictoria) {
-                textoMovimientosFinales.textContent = estadoJuego.movimientos;
-                modalVictoria.classList.add("visible");
-            } else {
-                alert(`¡Felicidades! Has ganado el juego en ${estadoJuego.movimientos} movimientos.`);
-            }
-        }, 100);
-    }
+	if (estanApagadasTodasLasLuces()) {
+		for (let i = 0; i < filas; i++) {
+			for (let j = 0; j < columnas; j++) {
+				tablero[i][j].boton.disabled = true;
+			}
+		}
+		setTimeout(() => {
+			alert(`¡Felicidades! Has ganado el juego en ${movimientos} movimientos.`);
+		}, 100);
+	}
 }
